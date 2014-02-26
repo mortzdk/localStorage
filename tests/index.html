@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Test localStorage polyfill</title>
+		<!--
+		  localStorage:
+				- Opera 12.16 throws (QUOTA_EXCEEDED_ERR) 
+				  (2.000.000) [Can be adjusted]
+				- Firefox 27 throws (NS_ERROR_DOM_QUOTA_REACHED)
+				  (5.000.000) [Can be adjusted]
+				- Chromium 32 throws (QuotaExceededError)
+				  (5.000.000)
+				- IOS 6, Safari throws (QUOTA_EXCEEDED_ERR)
+				  (2.400.000)
+				- IE 8 throws (Error)
+				  (5.000.000)
+				- IE 9 throws (Error)
+				  (1.300.000)
+				- IE 10
+				- IE 11
+
+		  globalStorage:
+				- Firefox 3.0 throws (NS_ERROR_DOM_QUOTA_REACHED)
+				  (5.300.000)
+		  userData:
+				- IE 7 throws (Error)
+				  (66.000)
+				- IE 6 throws (Error)
+				  (66.000)
+		 
+		  Google Gears:
+				?
+
+		  Flash:
+				- FlashPlayer 9.0.0 and greater
+				 (100.000) [Can be adjusted]
+
+		  Cookies:
+				- Cross-Browser throws self-defined (CookieQuotaExceeded)
+				 (~4096)
+		--> 
+
+		<!-- Optionally include swfobject, to have enable flash polyfill -->
+		<script
+			src="//ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"
+			type="text/javascript">
+		</script>
+		<script 
+			src="../dist/localStorage.min.js" 
+			type="text/javascript">
+		</script>
+		<script type="text/javascript">
+		(function (w) {
+			var test = function () {
+				alert("Current objects in localStorage: " + w.localStorage.length);
+				alert("Lets add an object");
+				w.localStorage.setItem("test", "We are testing localStorage");
+				alert("Current objects in localStorage: " + w.localStorage.length);
+				alert("Lets add another");
+				w.localStorage.setItem("test2", "github");
+				alert("Current objects in localStorage: " + w.localStorage.length);
+				alert("The key of the first object is: " + w.localStorage.key(0));
+				alert("Lets remove that object.");
+				w.localStorage.removeItem("test");
+				alert("Current objects in localStorage: " + w.localStorage.length);
+				alert("The key of the first object is: " + w.localStorage.key(0));
+				alert("Lets delete all objects in localStorage");
+				w.localStorage.clear();
+				alert("Current objects in localStorage: " + w.localStorage.length);
+			};
+			
+			/** 
+			 * If we have choosen to include swfobject and a browser comes to 
+			 * the conclusion that the flash polyfill is the best supported, we
+			 * have to ensure that the flash file is actually loaded and ready
+			 * else we just use our polyfill immediately.
+			 */
+			if (w.swfLoaded) {
+				w.swfLoaded(test);
+			} else {
+				test.call(this);
+			}
+		}(window));
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
