@@ -1,0 +1,4 @@
+localStorage
+============
+
+A localStorage polyfill
