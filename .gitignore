@@ -1,3 +1,4 @@
 *.swp
 *.*~
 preview_github_readme*
+node_modules

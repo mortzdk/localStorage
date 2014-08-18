@@ -10,24 +10,31 @@
 		private var storage:SharedObject;
 		private var count:int;
 		private var logFn:String;
+		private var readyFn:String;
 
 		public function localStorage() {
 			var prop:String;
 
-			if (this.loaderInfo.parameters.logfn) {
-				this.logFn = this.loaderInfo.parameters.logfn;
+			if (this.loaderInfo.parameters.logFn) {
+				this.logFn = this.loaderInfo.parameters.logFn;
 			}
+
+			if (this.loaderInfo.parameters.readyFn) {
+				this.readyFn = this.loaderInfo.parameters.readyFn;
+			}
+
+			this.log("Initializing");
 
 			if (!ExternalInterface.available) {
 				this.log("ExternalInterface is not available");
 				return;
 			}
 
-			this.log("Initializing");
-			
+			this.log("Setting security restrictions");
 			Security.allowDomain("*");
 			Security.allowInsecureDomain("*");
 
+			this.log("Getting SharedObject");
 			try {
 				this.storage = SharedObject.getLocal("localStorage");
 			} catch (error:Error) {
@@ -35,6 +42,7 @@
 				return;
 			}
 
+			this.log("Setting length of storage");
 			this.count = 0;
 			if (this.storage.data != null) {
 				for (prop in this.storage.data) {
@@ -42,6 +50,7 @@
 				}
 			}
 
+			this.log("Creating callback methods");
 			try {
 				ExternalInterface.addCallback("length", this.length);
 				ExternalInterface.addCallback("key", this.key);
@@ -54,12 +63,15 @@
 			} catch (error:Error) {
 				this.log("An Error occurred: " + error.message + "\n");	
 			}
+
+			this.log("Firing ready state callback");
+			ExternalInterface.call(readyFn, true);
 		}
 		
-		private function log(msg):void {
-			if (logFn) {
+		private function log(msg:String):void {
+			if (this.logFn) {
 				try {
-					ExternalInterface.call(logFn, msg);
+					ExternalInterface.call(this.logFn, msg);
 				} catch (ignore:Error) {}
 			}
 		}
@@ -108,15 +120,18 @@
 		}
 
 		private function key(index:int):String {
-			var i:int = 0, key:String, prop:String;
+			var i:int = 0, key:String, prop:String, keys:Array;
 
 			try {
+				keys = new Array();
+	
 				for (prop in this.storage.data) { 
-					if (i == index) { 
-						return prop;
-					}
-					i++;
+					keys.push(prop);
 				}
+
+				keys.sort();
+
+				return keys[index];
 			} catch (error:Error) {
 				this.log("Unable to fetch key - " + error.message);
 			}
@@ -139,10 +154,14 @@
 		}
 
 		private function setItem(key:String, data:String):void {
-			try { 
+			var bool:Boolean;
+			try {
+				bool = !this.storage.data.hasOwnProperty(key);
 				this.storage.data[key] = data;
 				this.flush();
-				this.count++;
+				if (bool) {
+					this.count++;
+				}
 			} catch (error:Error) {
 				this.log("Unable to store data - " + error.message);
 			}
@@ -152,7 +171,9 @@
 			try {
 				delete this.storage.data[key];
 				this.flush();
-				this.count = Math.max(0, this.count-1);
+				if (!this.storage.data.hasOwnProperty(key)) {
+					this.count = Math.max(0, this.count-1);
+				}
 			} catch (error:Error) {
 				this.log("Unable to delete data - " + error.message);
 			}
@@ -162,10 +183,10 @@
 			try {
 				this.storage.clear();
 				this.flush();
+				this.count = 0;
 			} catch (error:Error) {
 				this.log("Unabled to clear data - " + error.message);
 			}
-			this.count = 0;
 		}
 	}
 }
