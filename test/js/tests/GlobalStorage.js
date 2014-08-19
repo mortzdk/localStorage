@@ -188,7 +188,7 @@
 
 	QUnit.asyncTest("setItem()", 0, function (assert) {
 		if ( _ ) {
-			QUnit.expect(1);
+			QUnit.expect(2);
 			timer = setInterval(function () {
 				if ( _.isLoaded() ) {
 					clearInterval(timer);
@@ -203,6 +203,33 @@
 						"3",
 						"Testing that key 'Test1' holds the right value " + 
 						"after multiple reassignments"
+					);
+
+					_.clear();
+					
+					assert.throws(
+						function () {
+							var bool = true, 
+							    longString = "1";
+							while (bool) {
+								try {
+									longString += longString;
+									_.setItem("Quota", longString);
+									_.removeItem("Quota");
+								} catch (e) {
+									bool = false;
+									throw {
+										"name" : e.name,
+										"message" : e.message
+									};
+								}
+							}
+						},
+						function (err) {
+							return err.name === "NS_ERROR_DOM_QUOTA_REACHED";
+						},
+						"Testing that GlobalStorage throws exception if data " +
+						"exceeds limit."
 					);
 
 					_.clear();

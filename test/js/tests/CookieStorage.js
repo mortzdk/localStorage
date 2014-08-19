@@ -187,7 +187,6 @@
 	});
 
 	QUnit.asyncTest("setItem()", 0, function (assert) {
-		var i, longString = "1";
 		if ( _ ) {
 			QUnit.expect(2);
 			timer = setInterval(function () {
@@ -206,13 +205,22 @@
 						"after multiple reassignments"
 					);
 
-					for (i = 12; i > -1; i -= 1) {
-						longString += longString;
-					}
+					_.clear();
 					
 					assert.throws(
 						function () {
-							_.setItem("Exceed", longString);
+							var bool = true, 
+							    longString = "1";
+							while (bool) {
+								try {
+									longString += longString;
+									_.setItem("Quota", longString);
+									_.removeItem("Quota");
+								} catch (e) {
+									bool = false;
+									throw e;
+								}
+							}
 						},
 						function (err) {
 							return err.name === "CookieQuotaExceeded";

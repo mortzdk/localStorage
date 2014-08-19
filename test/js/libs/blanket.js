@@ -4836,8 +4836,11 @@ blanket.defaultReporter = function(coverage){
     //http://stackoverflow.com/a/2954896
 	var makeArray = function (_arg) {
 		var arr = [];
-		for (var i = _arg.length-1; i > -1; i-=1) {
-			arr.push(_arg[i]);
+
+		if (_arg) {
+			for (var i = _arg.length-1; i > -1; i-=1) {
+				arr.push(_arg[i]);
+			}
 		}
 		return arr;
 	};

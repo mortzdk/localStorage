@@ -1,4 +1,4 @@
 *.swp
 *.*~
-preview_github_readme*
+preview/*
 node_modules

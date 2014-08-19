@@ -109,7 +109,11 @@
 				// 		Test2
 				// whereas other browsers put them in the order that it was 
 				// set.
-				if ( window.localStorage instanceof window.GlobalStorage) {
+				if ( window.localStorage instanceof window.GlobalStorage ||
+				     ( !window.localStorage.isLoaded && 
+					   window.InstallTrigger && 
+					   !document.getElementById("container").outerHTML
+					 ) ) {
 					assert.strictEqual(
 						_.key(0),
 						"Test2",
@@ -126,7 +130,7 @@
 						"Testing index 1 of storage after 3 items is added"
 					);
 				} else if ( window.InstallTrigger || 
-				     location.href.match(/(\?|&)gruntReport($|&|=)/) ) {
+				     		location.href.match(/(\?|&)gruntReport($|&|=)/) ) {
 					assert.strictEqual(
 						_.key(0),
 						"Test1",
@@ -177,12 +181,19 @@
 
 				// IE throws Error on native localStorage object if key is not 
 				// there.
-				if ( conditionalComment("if lt IE 10") && !window.localStorage.isLoaded) {
+				if ( ( conditionalComment("if lte IE 9") && 
+				       !window.localStorage.isLoaded ) ||
+					 ( window.InstallTrigger && 
+					   !window.localStorage.isLoaded &&
+					   !document.getElementById("container").outerHTML
+					 ) ) {
 					assert.throws(
 						function () {
 							_.key(0);
 						},
-						new Error("Invalid argument."),
+						function (err) {
+							return /^error$|index_size_err/i.test(err.name);
+						},
 						"Testing index 0 is null as the storage is empty"
 					);
 				} else {
@@ -260,7 +271,7 @@
 
 	QUnit.asyncTest("setItem()", 0, function (assert) {
 		var func = function () {
-				QUnit.expect(1);
+				QUnit.expect(2);
 
 				_.clear();
 
@@ -272,6 +283,34 @@
 					"3",
 					"Testing that key 'Test1' holds the right value " + 
 					"after multiple reassignments"
+				);
+
+				_.clear();
+
+				assert.throws(
+					function () {
+						var bool = true, 
+						    longString = "1";
+						while (bool) {
+							try {
+								longString += longString;
+								_.setItem("Quota", longString);
+								_.removeItem("Quota");
+							} catch (e) {
+								bool = false;
+								throw {
+									"name" : e.name,
+									"message" : e.message
+								};
+							}
+						}
+					},
+					function (err) {
+						return /quota|error/i.test(err.name) ||
+							   /quota/i.test(err.message);
+					},
+					"Testing that localStorage throws exception if data " +
+					"exceeds limit."
 				);
 
 				_.clear();

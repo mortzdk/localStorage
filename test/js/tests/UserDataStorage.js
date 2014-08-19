@@ -17,10 +17,12 @@
 
   	QUnit.module("UserDataStorage", {
   		setup : function () {
-			// It seems that the userdata behavior is broken in IE9,
+			// It seems that the userdata behavior is broken in IE9 and IE10,
 			// so we do not test for it.
+			// http://stackoverflow.com/questions/13481817/internet-explorer-official-status-of-userdata-behavior
 			if ( document.documentElement.addBehavior && 
-			     !conditionalComment("if IE 9") && 
+			     !conditionalComment("if gte IE 9") && 
+			     ( document.documentMode && document.documentMode < 9 ) && 
 				 !_ ) {
 				_ = window.UserDataStorage();
 			}
@@ -221,13 +223,32 @@
 						"Testing that key 'Test1' holds the right value " + 
 						"after multiple reassignments"
 					);
+
 					_.clear();
-					assert.strictEqual(
-						_.getItem("Test1"),
-						null,
-						"Testing that the key does not hold any value when " + 
-						"storage is empty"
+					
+					assert.throws(
+						function () {
+							var bool = true, 
+							    longString = "1";
+							while (bool) {
+								try {
+									longString += longString;
+									_.setItem("Quota", longString);
+									_.removeItem("Quota");
+								} catch (e) {
+									bool = false;
+									throw e;
+								}
+							}
+						},
+						function (err) {
+							return err.name === "UserDataQuotaExceeded";
+						},
+						"Testing that GlobalStorage throws exception if data " +
+						"exceeds limit."
 					);
+
+					_.clear();
 
 					QUnit.start();
 				}

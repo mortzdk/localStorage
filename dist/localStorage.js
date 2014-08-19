@@ -259,11 +259,9 @@
 
 		"key" : function (_index) {
 			var self = this;
-			if ( _index+1 > self.length || 
-			     _index < 0 ) {
-				return null;
-			}
-			return self.__storage__.key(_index);
+			
+			return (_index+1 > self.length || _index < 0) ?
+				null : self.__storage__.key(_index);
 		},
 
 		"getItem" : function (_key) {
@@ -354,9 +352,14 @@
 		},
 
 		"key" : function (_index) {
-			var self = this;
-			return _index >= self.length ? 
-				null : self.__attributes__[_index].name;
+			var self = this,
+			    result = null;
+			try {
+				result =  _index >= self.length ? 
+					null : self.__attributes__[_index].name;
+			} catch (ignore) {}
+			
+			return result;
 		},
 
 		"getItem" : function (_key) {
@@ -366,9 +369,16 @@
 
 		"setItem" : function (_key, _data) {
 			var self = this;
-			self.__storage__.setAttribute(_.fixKey(_key), _data);
-			self.__storage__.save(name + "_" + _.domain);
-			self.length = self.__attributes__.length;
+			try {
+				self.__storage__.setAttribute(_.fixKey(_key), _data);
+				self.__storage__.save(name + "_" + _.domain);
+				self.length = self.__attributes__.length;
+			} catch (e) {
+				throw {
+					"name" : "UserDataQuotaExceeded",
+					"message" : "UserData is out of memory"
+				};
+			}
 		},
 
 		"removeItem" : function (_key) {
@@ -393,10 +403,10 @@
 	window.UserDataStorage = UserDataStorage;
 
 	var FlashStorage = Class.extend({
-		"init" : function (url) {
+		"init" : function (url, onerror) {
 			var self = this,
 			    owner,
-				timeout = 10000,
+				timeout = 2000,
 				attrs = "",
 				body = document.body || 
 				       document.getElementsByTagName("body")[0],
@@ -431,7 +441,9 @@
 		    		}, 10);
 		    		eTimer = setTimeout(function () {
 		    			clear.call(self);
-						_error.call(self);
+						if ( _.isFunction(_error) )  {
+							_error.call(self);
+						}
 		    		}, timeout);
 		    	}, unload = function () {
 					var timer = null;
@@ -457,7 +469,7 @@
 			};
 
 			try {
-				attributes.classid = "clsid:D27CDB6E-AE6D-11cf-96B8-444553540000";
+				attributes.classid = "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000";
 				parameters.movie = url;
 
 				_.forEach(attributes, function (_value, _key) {
@@ -529,7 +541,12 @@
 				};
 
 				self.setItem = function (_key, _data) {
-					self.__storage__.setItem(_key, _data);
+					if ( !self.__storage__.setItem(_key, _data) ) {
+						throw {
+							"name" : "FlashQuotaExceeded",
+							"message" : "The storage quota was exceeded"
+						};
+					}
 					self.length = self.__storage__.length(); 
 				};
 
@@ -546,9 +563,7 @@
 				self.isLoaded = function () {
 					return true;
 				};
-			}, function() {
-				throw new Error("localStorage.swf timed out");
-			});
+			}, onerror);
 		},
 
 		"isLoaded" : function () {
@@ -708,7 +723,12 @@
 		});
 		Storage.prototype.constructor = Storage;
 		window.Storage = Storage;
-		window.localStorage = new Storage("js/localStorage.swf");
+		window.localStorage = new Storage(
+			"js/localStorage.swf",
+			function () {
+				window.localStorage = new CookieStorage();
+			}
+		);
 	}
 
 }(window, window.document, window.location, window.navigator, void(0), 

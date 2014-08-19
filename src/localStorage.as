@@ -76,8 +76,9 @@
 			}
 		}
 		
-		private function flush():void {
-			var status:String = null;
+		private function flush():Boolean {
+			var status:String = null,
+				state:Boolean = true;
 
 			try {
 				status = this.storage.flush(10000);
@@ -85,7 +86,7 @@
 				this.log("Could not write SharedObject to disk - " + error.message);
 			}
 
-			if (storage != null) {
+			if (this.storage != null) {
 				switch (status) {
 					case SharedObjectFlushStatus.PENDING:
 						log("Requesting permission to save object");
@@ -93,11 +94,13 @@
 							NetStatusEvent.NET_STATUS, 
 							this.status
 						);
+						state = false;
 						break;
 					case SharedObjectFlushStatus.FLUSHED:
 						break;
 				}
 			}
+			return state;
 		}
 
 		private function status(event:NetStatusEvent):void {
@@ -153,18 +156,19 @@
 			return null;
 		}
 
-		private function setItem(key:String, data:String):void {
-			var bool:Boolean;
+		private function setItem(key:String, data:String):Boolean {
+			var bool:Boolean, state:Boolean = false;
 			try {
 				bool = !this.storage.data.hasOwnProperty(key);
 				this.storage.data[key] = data;
-				this.flush();
-				if (bool) {
+				state = this.flush();
+				if (state && bool) {
 					this.count++;
 				}
 			} catch (error:Error) {
 				this.log("Unable to store data - " + error.message);
 			}
+			return state;
 		}
 
 		private function removeItem(key:String):void {
