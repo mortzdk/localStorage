@@ -2,21 +2,46 @@ localStorage
 ============
 
 A localStorage polyfill that makes the window object `localStorage`
-available in both modern and old browser. This is done using a lot of
+available in both modern and old browsers. This is done using a lot of
 different techniques, that enables persistent synchronous storage in one way 
 or another.
 
 # How to use
 
 To use this polyfill you simply have to include the localStorage.js file to 
-your site. Furthermore you have to specify as a parameter to the file, where
-the localStorage.swf file can be found. One example could be:
+your site. Furthermore you have to specify the URL of the localStorage.swf as
+the `swfURL` parameter to the file source. One example could be:
 
 <pre>
-<script type="text/javascript"
-        src="js/localStorage-debug.js?swfURL=js/localStorage.swf">
-</script>
+&lt;script type="text/javascript"
+        src="js/localStorage-debug.js?swfURL=js/localStorage.swf"&gt;
+&lt;/script&gt;
 </pre>
+
+# isLoaded
+
+To ensure that the localStorage polyfill is fully loaded a method has been 
+added to the polyfill. The method `isLoaded` on the localStorage object is 
+supposed to be run before any use of the localStorage object. If the object is
+an instance of the FlashStorage, the method is used to ensure that the flash
+file is loaded and ready. In any other case the method will call the callback 
+function immediately. If the `isLoaded` method is not available in the 
+`localStorage` object, it is safe to assumme that it is the native object.
+
+<pre>
+var func = function () {
+	window.localStorage.getItem("TEST");	
+};
+
+if ( window.localStorage.isLoaded ) {
+	window.localStorage.isLoaded(
+		func
+	);
+} else {
+	func.call(this);
+}
+</pre>
+
 
 # Supported Browsers
 
@@ -110,43 +135,17 @@ object is not the native localStorage:
 * FlashStorage
 * CookieStorage
 
-To provide the instanceof feature in both the minified and original version, 
-the classes probably need the window object:
+Hence it is possible to use the following features:
 
 <pre>
-window.localStorage instanceof window.Storage
-window.localStorage instanceof window.GlobalStorage
-window.localStorage instanceof window.UserDataStorage
-window.localStorage instanceof window.FlashStorage
-window.localStorage instanceof window.CookieStorage
+localStorage instanceof Storage
+localStorage instanceof GlobalStorage
+localStorage instanceof UserDataStorage
+localStorage instanceof FlashStorage
+localStorage instanceof CookieStorage
 </pre>
 
 Each of these storages can be created by their own as well.
-
-# isLoaded
-
-To ensure that the localStorage polyfill is fully loaded a method has been 
-added to the polyfill. The method `isLoaded` on the localStorage object is 
-supposed to be run before any use of the localStorage object. If the object is
-an instance of the FlashStorage, the method is used to ensure that the flash
-file is loaded and ready. In any other case the method will call the callback 
-function immediately. If the `isLoaded` method is not available in the 
-`localStorage` object, it means that the object is the native object and it 
-can be used immediately as well.
-
-<pre>
-var func = function () {
-	window.localStorage.getItem("TEST");	
-};
-
-if ( window.localStorage.isLoaded ) {
-	window.localStorage.isLoaded(
-		func
-	);
-} else {
-	func.call(this);
-}
-</pre>
 
 # Exceptions
 
