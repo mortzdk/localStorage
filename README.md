@@ -3,7 +3,20 @@ localStorage
 
 A localStorage polyfill that makes the window object `localStorage`
 available in both modern and old browser. This is done using a lot of
-different techniques, that enables persistent storage in one way or another.
+different techniques, that enables persistent synchronous storage in one way 
+or another.
+
+# How to use
+
+To use this polyfill you simply have to include the localStorage.js file to 
+your site. Furthermore you have to specify as a parameter to the file, where
+the localStorage.swf file can be found. One example could be:
+
+<pre>
+<script type="text/javascript"
+        src="js/localStorage-debug.js?swfURL=js/localStorage.swf">
+</script>
+</pre>
 
 # Supported Browsers
 
@@ -21,7 +34,9 @@ object. The other techniques enable browser support as listed:
 * globalStorage
 	- Firefox 2 - 13
 * userData behaviour
-	- IE 5 - 10 (IE 9 and IE 10 should work, but the tests have proven otherwise)
+	- IE 5 - 10 (IE 9 and IE 10 should work, but my own - and 
+	[others](http://stackoverflow.com/questions/13481817/internet-explorer-official-status-of-userdata-behavior) - 
+	tests have proven otherwise)
 
 # Tests
 
@@ -39,6 +54,11 @@ As per 20/08-2014 the polyfill has been tested successfully in:
 * Chromium 36 (Ubuntu 14.04)
 * Opera 9.0 (WinXP)
 * Opera 12.16 (Ubuntu 14.04)
+
+There has been put a lot of efford in creating 
+[unit tests](https://github.com/mortzdk/localStorage/tree/v2.0/test/js/tests) 
+and providing code coverage. To provide these thing the libraries QUnit and 
+Blanket has been used.
 
 # Techniques
 
@@ -80,7 +100,7 @@ used to create the polyfill.
 
 Furthermore as of version 2.0 the localStorage polyfill is created using Object
 Oriented Programming, meaning that the localStorage object will be an instance 
-of a imitated `Storage` object. 
+of an imitated `Storage` object. 
 
 The localStorage object is furthermore instance of one of four classes if the
 object is not the native localStorage:
@@ -91,7 +111,7 @@ object is not the native localStorage:
 * CookieStorage
 
 To provide the instanceof feature in both the minified and original version, 
-the classes need the window object:
+the classes probably need the window object:
 
 <pre>
 window.localStorage instanceof window.Storage
@@ -105,12 +125,14 @@ Each of these storages can be created by their own as well.
 
 # isLoaded
 
-To ensure that the localStorage polyfill is fully loaded a function has been 
-added to the polyfill. The function `isLoaded` on the localStorage object is 
+To ensure that the localStorage polyfill is fully loaded a method has been 
+added to the polyfill. The method `isLoaded` on the localStorage object is 
 supposed to be run before any use of the localStorage object. If the object is
-an instance of the FlashStorage, the function is used to ensure that the flash
-file is loaded. In any other case the function will call the callback function
-immediately.
+an instance of the FlashStorage, the method is used to ensure that the flash
+file is loaded and ready. In any other case the method will call the callback 
+function immediately. If the `isLoaded` method is not available in the 
+`localStorage` object, it means that the object is the native object and it 
+can be used immediately as well.
 
 <pre>
 var func = function () {
@@ -130,9 +152,9 @@ if ( window.localStorage.isLoaded ) {
 
 The polyfill does not handle any exceptions. Instead it just pass on the
 exception to the callee-function which then can choose to catch it. The cookie 
-and flash solutions throws a new exception named CookieQuotaExceeded and 
-FlashQuotaExceeded, which are thrown when the data stored is greater than what 
-is allowed for the solution.
+and flash solutions throws a new exception named CookieQuotaExceeded, 
+UserDataQuotaExceeded and FlashQuotaExceeded, which are thrown when the data 
+stored is greater than what is allowed for the solution.
 
 The best practice of handling the polyfill element is to have a try-catch
 around any `setItem` call, as this method potentially will throw exceptions
@@ -151,8 +173,8 @@ try {
 	);                                                          
 } catch (exc) {                                                 
 	if ( regexp_quota.test(exc.name) || 
-	     exc.name === "Error" || 
-		 regexp_quota.test(exc.message) ) {
+	     regexp_quota.test(exc.message)||
+	     exc.name === "Error" ) {
 		alert("The localStorage is full");
 	}
 }

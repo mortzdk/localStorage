@@ -43,7 +43,7 @@ module.exports = function (grunt) {
 					module: true,
 					QUnit: true,
 					ActiveXObject: true,
-					GarbageCollect: true
+					CollectGarbage: true
 				}
 			}
 		},

@@ -4837,15 +4837,16 @@ blanket.defaultReporter = function(coverage){
 	var makeArray = function (_arg) {
 		var arr = [];
 
-		if (_arg) {
-			for (var i = _arg.length-1; i > -1; i-=1) {
-				arr.push(_arg[i]);
-			}
+		for (var i = _arg.length-1; i > -1; i-=1) {
+			arr.push(_arg[i]);
 		}
+
 		return arr;
 	};
     var toArray = Array.prototype.slice;
-    var scripts = makeArray(document.scripts);
+    var scripts = makeArray(
+		document.scripts || document.getElementsByTagName("script")
+	);
     toArray.call(makeArray(scripts[scripts.length - 1].attributes))
                     .forEach(function(es){
                         if(es.nodeName === "data-cover-only"){

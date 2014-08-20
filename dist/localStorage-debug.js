@@ -106,6 +106,28 @@
 		};
 
 		/**
+		 * Function to retrieve the swf url based on the src of the script.
+		 */
+		self.swfURL = (function() {
+			var scripts = document.scripts || 
+			              document.getElementsByTagName("script"),
+				source = scripts[scripts.length-1].src.split("?"),
+				url = null;
+
+			if (source[1]) {
+				self.each(source[1].split("&"), function (_arg) {
+					var data = _arg.split("=");
+
+					if (data[0] === "swfURL") {
+						url = decodeURIComponent(data[1].replace(/\+/g,  " "));
+					}
+				});	
+			}
+
+			return url;
+		})();
+
+		/**
 		 * Function that emulates the appendChild method.
 		 */
 		self.appendChild = function (_parent, _child) {
@@ -197,8 +219,9 @@
 		ready = false,
 		proto;
 
+	// Inspired by the solution from John Resig
+	// http://ejohn.org/blog/simple-javascript-inheritance/#postcomment
 	function Class(){} 
-	// Create a new Class that inherits from this class
 	Class.extend = function(_values) {
 		var Self = this,
 			superClass = Self.prototype,
@@ -209,12 +232,10 @@
 						var res,
 							temp = this.$super;
 	   
-						// Add a new ._super() method that is the same method
+						// Add a new super method that is the same method
 						// but on the super-class
 						this.$super = superClass[name];
 
-						// The method only need to be bound temporarily, so we
-						// remove it when we're done executing
 						res = fn.apply(this, arguments);        
 
 						this.$super = temp;
@@ -233,10 +254,8 @@
 							 _value;
 		});
  
-		// The dummy class constructor
 		function Persistent () {
 			var self = this;
-			// All construction is actually done in the init method
 
 			if ( !(self instanceof Persistent) ) {
 				return new Persistent(arguments[0]);
@@ -246,14 +265,8 @@
 				self.init.apply(self, arguments);
 			}
 		}
-	 
-		// Populate our constructed prototype object
 		Persistent.prototype = protoClass;
-
-		// Enforce the constructor to be what we expect
 		Persistent.prototype.constructor = Persistent;
-
-		// And make this class extendable
 		Persistent.extend = Self.extend;
 
 		return Persistent;
@@ -410,9 +423,10 @@
 	window.UserDataStorage = UserDataStorage;
 
 	var FlashStorage = Class.extend({
-		"init" : function (url, onerror) {
+		"init" : function (onerror) {
 			var self = this,
 			    owner,
+				url = _.swfURL ? _.swfURL : name + ".swf",
 				timeout = 2000,
 				attrs = "",
 				mimetype = "application/x-shockwave-flash",
@@ -719,7 +733,6 @@
 		Storage.prototype.constructor = Storage;
 		window.Storage = Storage;
 		window.localStorage = new Storage(
-			"js/localStorage.swf",
 			function () {
 				window.localStorage = new CookieStorage();
 			}

@@ -40,7 +40,7 @@
   	QUnit.module("FlashStorage", {
   		setup : function () {
 			if ( hasFlash() && !_ ) {
-				_ = window.FlashStorage("js/localStorage.swf");
+				_ = window.FlashStorage();
 			}
 			timer = null;
   		},
