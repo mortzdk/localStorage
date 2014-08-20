@@ -2,22 +2,14 @@ module.exports = function (grunt) {
 	"use strict";
 	grunt.initConfig({
 		pkg: grunt.file.readJSON("package.json"),
-		concat: {
-			options: {
-				separator : ";"
-			},
-			dist: {
-				src: ["src/*.js"],
-				dest: "dist/<%= pkg.name %>.js"
-			}
-		},
 		uglify: {
 			options: {
 				banner : "/* <%= pkg.name %> - Version <%= pkg.version %> - <%= grunt.template.today('dd-mm-yyyy') %> */\n"
 			},
 			dist: {
 				files: {
-					"dist/<%= pkg.name %>.min.js": ["<%= concat.dist.dest %>"]
+					"dist/<%= pkg.name %>.min.js": ["dist/<%= pkg.name %>.js"],
+					"dist/<%= pkg.name %>-debug.min.js": ["dist/<%= pkg.name %>-debug.js"]
 				}
 			}
 		},
@@ -65,7 +57,7 @@ module.exports = function (grunt) {
 				"clean",
 				"jshint", 
 				"shell",
-				"copy", 
+				"copy:test", 
 				"blanket_qunit"
 			]
 		},
@@ -87,11 +79,13 @@ module.exports = function (grunt) {
 					cwd: "src",
 					src: ["*.js", "*.swf"],
 					dest: "test/js/"
-				},
-				{
+				}]
+			},
+			dist : {
+				files: [{
 					expand: true,
 					cwd: "src",
-					src: ["*.swf"],
+					src: ["*.js", "*.swf"],
 					dest: "dist/"
 				}]
 			}
@@ -111,8 +105,11 @@ module.exports = function (grunt) {
 		,blanket_qunit : {
 			all : {
 				options : {
-					urls : ["test/index.html?coverage=true&gruntReport"],
-					threshold : 26 
+					urls : [
+						"test/index.html?coverage=true&gruntReport",
+						"test/index-debug.html?coverage=true&gruntReport"
+					],
+					threshold : 22 
 				}
 			}
 		}
@@ -126,7 +123,6 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-contrib-jshint");
 	grunt.loadNpmTasks("grunt-blanket-qunit");
 	grunt.loadNpmTasks("grunt-contrib-watch");
-	grunt.loadNpmTasks("grunt-contrib-concat");
 
 	grunt.registerTask(
 		"clear", 
@@ -138,7 +134,7 @@ module.exports = function (grunt) {
 			"clean",
 			"jshint", 
 			"shell",
-			"copy", 
+			"copy:test", 
 			"blanket_qunit"
 		]
 	);
@@ -148,9 +144,9 @@ module.exports = function (grunt) {
 			"clean", 
 			"jshint", 
 			"shell",
-			"copy", 
+			"copy:test", 
 			"blanket_qunit", 
-			"concat", 
+			"copy:dist",
 			"uglify"
 		]
 	);

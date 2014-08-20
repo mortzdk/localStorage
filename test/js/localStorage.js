@@ -1,88 +1,81 @@
-(function (window, document, location, navigator, undefined, name) {
+(function (window, document, location, navigator, undefined, f, t) {
 	"use strict";
-
-	function Helper () {
-		var self = this;
-		
-		/**
-		 * Variable holding the documents protocol
-		 */
-		self.protocol = location.protocol || document.protocol;
-
-		/**
-		 * Variable holding the documents domain
-		 */
-		self.domain = document.domain;
-
-		/**
-		 * Variable holding the Object prototype.
-		 */
-		self.oProto = Object.prototype;
-
-		/**
-		 * Function to check whether the argument is undefined.
-		 */
-		self.isUndefined = function (_arg) {
+	
+	var proto,
+	    ready = f,
+		docDomain = document.domain,
+		protocol = location.protocol || document.protocol,
+		bodyElem = document.body || document.getElementsByTagName("body")[0],
+		objectPrototype = Object.prototype,
+		name = "name",
+		object = "object",
+		local = "local",
+		host = "host",
+		domain = "domain",
+		onunload = "onunload",
+		script = "script",
+		body = "body",
+		html = "html",
+		title = "title",
+		head = "head",
+		div = "div",
+		type = "type",
+		none = "none",
+		param = "param",
+		value = "value",
+		string = "String",
+		func = "Function",
+		number = "Number",
+		userData = "UserData",
+		flash = "Flash",
+		cookie = "Cookie",
+		storage = "Storage",
+		quotaExceeded = "QuotaExceeded",
+		outOfMemory = " is out of memory",
+		localStorage = "localStorage",
+		flashMime = "application/x-shockwave-flash",
+		flashAox = "ShockwaveFlash.ShockwaveFlash",
+		flashPlugin = "Shockwave Flash",
+		isUndefined = function (_arg) {
 			return _arg === undefined;
-		};
-
-		/**
-		 * Function to check if the browser is IE.
-		 */
-		self.isIE = function () {
-			var result = false; 
+		},
+		isIE = function () {
+			var result = f; 
 
 			/* jshint ignore:start */
 			result = new Function("return/*@cc_on!@*/!1")() || 
-			         ( self.isNumber(document.documentMode) && 
+			         ( isNumber(document.documentMode) && 
 			           document.documentMode <= 10 );
-			         //window.navigator.msPointerEnabled;
 			/* jshint ignore:end */
 
 			return result;
-		};
-
-		/**
-		 * Function to fix the key of a storage function
-		 */
-		self.fixKey = function (_key) {
+		},
+		fixKey = function (_key) {
 			var forbidden = new RegExp(
 				"[!\"#$%&'()*+,/\\\\:;<=>?@[\\]^`{|}~]", "g"
 			);
 			return _key.replace(/^d/, "___$&").replace(forbidden, "___");
-		};
-
-		/**
-		 * Function to iterate through array.
-		 */
-		self.each = function (_array, _callback) {
+		},
+		each = function (_array, _callback) {
 			var length = _array.length;
 			while (length) {
 				length -= 1;
-				if ( !self.isUndefined(_array.key) ) {
-					_callback.call(self, _array.key(length), length);
+				if ( !isUndefined(_array.key) ) {
+					_callback.call(this, _array.key(length), length);
 				} else {
-					_callback.call(self, _array[length], length);
+					_callback.call(this, _array[length], length);
 				}
 			}
-		};
-
-		/**
-		 * Function to iterate through object.
-		 */
-		self.forEach = function (_object, _callback) {
+		},
+		forEach = function (_object, _callback) {
 			var key = null;
 			for (key in _object) {
 				if (_object.hasOwnProperty(key)) {
-					_callback.call(self, _object[key], key);
+					_callback.call(this, _object[key], key);
 				}
 			}
-		};
-
-		/**
-		 * Function to add attributes to element.
-		 */
-		self.attribute = function (_element, _key, _value) {
+		},
+		attribute = function (_element, _key, _value) {
 			var att;
 			if ( !!_element.setAttribute ) {
 				// Supported by most browsers.
@@ -99,93 +92,73 @@
 				// Last option.
 				_element[_key] = _value;
 			}
-		};
-
-		/**
-		 * Function to create an element.
-		 */
-		self.element = function (_arg) {
+		},
+		element = function (_arg) {
 			return document.createElement(_arg);
-		};
-
-		/**
-		 * Function that returns an integer in base 10.
-		 */
-		self.toInt = function (_arg) {
+		},
+		toInt = function (_arg) {
 			return parseInt(_arg, 10);
-		};
-
-		/**
-		 * Function that determines if flash is available.
-		 */
-		self.hasFlash = function () {
+		},
+		hasFlash = function () {
 			var flash, 
-			    description,
-				mimetype = "application/x-shockwave-flash";
+			    description;
 			try {
-				flash = new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
+				flash = new ActiveXObject(flashAox);
 				if ( flash ) {
 					description = flash.GetVariable("$version");	
 					if ( description && 
-						 _.toInt(description.split(" ")[1].split(",")[0]) >= 9 ) {
-						return true;
+						 toInt(description.split(" ")[1].split(",")[0]) >= 9 ) {
+						return t;
 					}
 				}
-				return false;
+				return f;
 			} catch (ignore) {
-				if ( _.isObject(navigator.plugins["Shockwave Flash"]) && 
-					 !_.isUndefined(navigator.mimeTypes) && 
-					 !_.isUndefined(navigator.mimeTypes[mimetype]) ) {
-					description = navigator.plugins["Shockwave Flash"].description;
-					if ( navigator.mimeTypes[mimetype].enabledPlugin && 
-						 !_.isUndefined(description) ) {
+				if ( isObject(navigator.plugins[flashPlugin]) && 
+					 !isUndefined(navigator.mimeTypes) && 
+					 !isUndefined(navigator.mimeTypes[flashMime]) ) {
+					description = navigator.plugins[flashPlugin].description;
+					if ( navigator.mimeTypes[flashMime].enabledPlugin && 
+						 !isUndefined(description) ) {
 						description = description.replace(
 							/^.*\s+(\S+\s+\S+$)/, 
 							"$1"
 						);
-						if ( _.toInt(description.replace(/^(.*)\..*$/, "$1")) >= 9 ) {
-							return true;
+						if ( toInt(description.replace(/^(.*)\..*$/, "$1")) >= 9 ) {
+							return t;
 						}
 					}
 				}
-				return false;
+				return f;
 			}
-		};
-
-		/**
-		 * Function to check whether the argument is an Object.
-		 */
-		self.isObject = function (_arg) {
+		},
+		isObject = function (_arg) {
 			return _arg === Object(_arg);
+		},
+		isString = function (_arg) {
+			return typeof _arg === string.toLowerCase() || 
+			       objectPrototype.toString.call(_arg) === "[" + object + " " + string + "]";
+		},
+		isFunction = function (_arg) {
+			return typeof _arg === func.toLowerCase() || 
+			       objectPrototype.toString.call(_arg) === "[" + object + " " + func + "]";
+		},
+		isNumber = function (_arg) {
+			return typeof _arg === number.toLowerCase() || 
+			       objectPrototype.toString.call(_arg) === "[" + object + " " + number + "]";
+		},
+		appendChild = function (_parent, _child) {
+			_parent.insertBefore(
+				_child, 
+				_parent.lastChild ? 
+				_parent.lastChild.nextSibling : 
+				_parent.lastChild
+			);
 		};
-
-		/**
-		 * Functions to check the type of a given argument.
-		 */
-		self.each.call(self,
-			[
-				"String",
-				"Function",
-				"Number"
-			],
-			function (_type) {
-				self["is" + _type] = function (_arg) {
-					return typeof _arg === _type.toLowerCase() || 
-					       self.oProto.toString.call(_arg) === "[object " + _type + "]"; 				};
-			}
-		);
-
-	}
-	Helper.prototype.constructor = Helper;
-	var _ = new Helper(),
-	    ready = false,
-		proto;
 
 	function Class(){} 
 	// Create a new Class that inherits from this class
 	Class.extend = function(_values) {
 		var Self = this,
-		    name,
 		    superClass = Self.prototype,
 		    protoClass = new Self(Class),
 		    superMethod = function () {
@@ -194,7 +167,7 @@
 						var res,
 						    temp = this.$super;
        
-						// Add a new ._super() method that is the same method
+						// Add a new super method that is the same method
 						// but on the super-class
 						this.$super = superClass[name];
 
@@ -210,15 +183,13 @@
 		    };
  
 		// Copy the properties over onto the new prototype
-		for (name in _values) {
-			if ( _values.hasOwnProperty(name) ) {
-				// Check if we're overwriting an existing function
-				protoClass[name] = ( _.isFunction(_values[name]) && 
-				 					 _.isFunction(superClass[name]) ) ?
-									 superMethod.call(Self, name, _values[name]) :
-									 _values[name];
-			}
-		}
+		forEach(_values, function (_value, _name) {
+			// Check if we're overwriting an existing function
+			protoClass[_name] = ( isFunction(_value) && 
+			 					 isFunction(superClass[_name]) ) ?
+								 superMethod.call(Self, _name, _value) :
+								 _value;
+		});
  
 		// The dummy class constructor
 		function Persistent () {
@@ -249,8 +220,10 @@
 	var GlobalStorage = Class.extend({
 		"init" : function () {
 			var self = this;
-			if ( location.hostname === "localhost" ) {
-				self.__storage__ = window.globalStorage["localhost.localdomain"];
+			if ( location.hostname === local + host ) {
+				self.__storage__ = window.globalStorage[
+					local + host + "." + local + domain
+				];
 			} else {
 				self.__storage__ = window.globalStorage[location.hostname];
 			}
@@ -267,7 +240,7 @@
 		"getItem" : function (_key) {
 			var self = this,
 			    object = self.__storage__.getItem(_key);
-			if ( _.isObject(object) ) {
+			if ( isObject(object) ) {
 				return object.value;
 			}
 			return object;
@@ -287,13 +260,13 @@
 
 		"clear" : function () {
 			var self = this;
-			_.each(self.__storage__, function (_key) {
+			each(self.__storage__, function (_key) {
 				self.removeItem(_key);
 			});
 		},
 
 		"isLoaded" : function () {
-			return true;
+			return t;
 		}
 	});
 	GlobalStorage.prototype.constructor = GlobalStorage;
@@ -305,10 +278,10 @@
 			    AXO,
 				owner,
 				garbage = function () {
-					window.detachEvent("onunload", garbage);
+					window.detachEvent(onunload, garbage);
 					AXO = owner = self.__storage__ = null;
 					/* jshint ignore:start */
-					if ( _.isFunction(GarbageCollect) ) {
+					if ( isFunction(GarbageCollect) ) {
 						GarbageCollect();
 					}
 					/* jshint ignore:end */
@@ -318,33 +291,27 @@
 				AXO = new ActiveXObject("htmlfile");
 				AXO.open();
 				AXO.write(
-					"<html><head><title>" + name + "</title>" + 
-					"<script type=\"text/javascript\">" +
-					"document.domain = '" + _.protocol + "//" + _.domain + "';" +
-					"</script>" +
-					"</head><body></body></html>"
+					"<" + html + "><" + head + "><" + title + ">" + localStorage + "</" + title + ">" + 
+					"<" + script + " " + type + "=\"text/javascript\">" +
+					"document." + domain + " = '" + protocol + "//" + docDomain + "';" +
+					"</" + script + ">" +
+					"</" + head + "><" + body + "></" + body + "></" + html + ">"
 				);
 				AXO.close();
 				owner = AXO.body;
-				self.__storage__ = AXO.createElement("div");
+				self.__storage__ = AXO.createElement(div);
 
-				window.attachEvent("unload", garbage);
+				window.attachEvent(onunload, garbage);
 			} catch (ignore) {
-				owner = document.body || 
-				        document.getElementsByTagName("body")[0];
-				self.__storage__ = _.element("div");
+				owner = bodyElem;
+				self.__storage__ = element(div);
 			}
 
-			owner.insertBefore(
-				self.__storage__, 
-				owner.lastChild ? 
-				owner.lastChild.nextSibling : 
-				owner.lastChild
-			);
+			appendChild(owner, self.__storage__); 
 
-			self.__storage__.style.display = "none";
+			self.__storage__.style.display = none;
 			self.__storage__.addBehavior("#default#userData");
-			self.__storage__.load(name + "_" + _.domain);
+			self.__storage__.load(localStorage + "_" + docDomain);
 
 			self.__attributes__ = 
 				self.__storage__.XMLDocument.documentElement.attributes;
@@ -364,39 +331,39 @@
 
 		"getItem" : function (_key) {
 			var self = this;
-			return self.__storage__.getAttribute(_.fixKey(_key));
+			return self.__storage__.getAttribute(fixKey(_key));
 		},
 
 		"setItem" : function (_key, _data) {
 			var self = this;
 			try {
-				self.__storage__.setAttribute(_.fixKey(_key), _data);
-				self.__storage__.save(name + "_" + _.domain);
+				self.__storage__.setAttribute(fixKey(_key), _data);
+				self.__storage__.save(localStorage + "_" + docDomain);
 				self.length = self.__attributes__.length;
 			} catch (e) {
 				throw {
-					"name" : "UserDataQuotaExceeded",
-					"message" : "UserData is out of memory"
+					"name" : userData + quotaExceeded,
+					"message" : userData + storage + outOfMemory
 				};
 			}
 		},
 
 		"removeItem" : function (_key) {
 			var self = this;
-			self.__storage__.removeAttribute(_.fixKey(_key));
-			self.__storage__.save(name + "_" + _.domain);
+			self.__storage__.removeAttribute(fixKey(_key));
+			self.__storage__.save(localStorage + "_" + docDomain);
 			self.length = self.__attributes__.length;
 		},
 
 		"clear" : function () {
 			var self = this;
-			_.each(self.__attributes__, function (_attr) {
+			each(self.__attributes__, function (_attr) {
 				self.removeItem(_attr.name);		
 			});
 		},
 
 		"isLoaded" : function () {
-			return true;
+			return t;
 		}
 	});
 	UserDataStorage.prototype.constructor = UserDataStorage;
@@ -408,12 +375,9 @@
 			    owner,
 				timeout = 2000,
 				attrs = "",
-				body = document.body || 
-				       document.getElementsByTagName("body")[0],
-				mimetype = "application/x-shockwave-flash",
 		    	attributes = {
-		    		"id" : name,
-		    		"name" : name,
+		    		"id" : localStorage,
+		    		"name" : localStorage,
 		    		"width" : 1,
 		    		"height" : 1
 		    	},
@@ -432,7 +396,7 @@
 		    			};
 
 		    		cTimer = setInterval(function () {
-		    			if ( ( _.oProto.hasOwnProperty(_object, "PercentLoaded") && 
+		    			if ( ( objectPrototype.hasOwnProperty(_object, "PercentLoaded") && 
 		    			       _object.PercentLoaded() === 100 ) ||
 							 ready ) {	
 		    				clear.call(self);
@@ -441,21 +405,21 @@
 		    		}, 10);
 		    		eTimer = setTimeout(function () {
 		    			clear.call(self);
-						if ( _.isFunction(_error) )  {
+						if ( isFunction(_error) )  {
 							_error.call(self);
 						}
 		    		}, timeout);
 		    	}, unload = function () {
 					var timer = null;
 
-					window.detachEvent("onunload", unload);
+					window.detachEvent(onunload, unload);
 					
-					owner.style.display = "none";
+					owner.style.display = none;
 					timer = setInterval(function () {
 						if (owner.readyState === 4) {
 							clearInterval(timer);
-							_.each(owner, function (_arg) {
-								if ( _.isFunction(_arg) ) {	
+							each(owner, function (_arg) {
+								if ( isFunction(_arg) ) {	
 									_arg = null;
 								}
 							});
@@ -472,63 +436,53 @@
 				attributes.classid = "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000";
 				parameters.movie = url;
 
-				_.forEach(attributes, function (_value, _key) {
+				forEach(attributes, function (_value, _key) {
 					attrs += _key + "=\"" + _value + "\" ";
 				});
 
-				owner = _.element(
-					"<object " + attrs + ">"
+				owner = element(
+					"<" + object + " " + attrs + ">"
 				);
 
-				_.forEach(parameters, function (_value, _key) {
-					var param = _.element(
-						"<param name='" + _key + "' value='" + _value + "'>"
+				forEach(parameters, function (_value, _key) {
+					var par = element(
+						"<" + param + " " + name + "='" + _key + "' " + value + "='" + _value + "'>"
 					);
-					owner.insertBefore(
-						param, 
-						owner.lastChild ? 
-						owner.lastChild.nextSibling : 
-						owner.lastChild
-					);
+					appendChild(owner, par); 
 				});
 
-				window.attachEvent("onunload", unload);
+				window.attachEvent(onunload, unload);
 			} catch (ignore) {
-				if ( !_.isIE() ) {
+				if ( !isIE() ) {
 					delete attributes.classid;
 					delete parameters.movie;
 				}
 
-				owner = _.element("object");
+				owner = element(object);
 
-				_.forEach(parameters, function (_value, _key) {
-					var param = _.element("param");
-					_.attribute(param, "name", _key);
-					_.attribute(param, "value", _value);
-					owner.insertBefore(
-						param, 
-						owner.lastChild ? 
-						owner.lastChild.nextSibling : 
-						owner.lastChild
-					);
+				forEach(parameters, function (_value, _key) {
+					var par = element(param);
+					attribute(par, name, _key);
+					attribute(par, value, _value);
+					appendChild(owner, par);
 				});
 
-				if ( !_.isIE() ) {
-					_.attribute(owner, "type", mimetype);
-					_.attribute(owner, "data", url);
+				if ( !isIE() ) {
+					attribute(owner, type, flashMime);
+					attribute(owner, "data", url);
 				}
 
-				_.forEach(attributes, function (_value, _key) {
-					_.attribute(owner, _key, _value);
+				forEach(attributes, function (_value, _key) {
+					attribute(owner, _key, _value);
 				});
 			}
 
-			body.insertBefore(owner, body.lastChild.nextSibling);
+			appendChild(bodyElem, owner);
 
 			swfLoaded.call(self, owner, function () {
-				self.__storage__ = document[name] || 
-						           document.getElementById(name) || 
-						           document.embeds[name];
+				self.__storage__ = document[localStorage] || 
+						           document.getElementById(localStorage) || 
+						           document.embeds[localStorage];
 
 				self.length = self.__storage__.length();
 
@@ -543,8 +497,8 @@
 				self.setItem = function (_key, _data) {
 					if ( !self.__storage__.setItem(_key, _data) ) {
 						throw {
-							"name" : "FlashQuotaExceeded",
-							"message" : "The storage quota was exceeded"
+							"name" : flash + quotaExceeded,
+							"message" : flash + storage + outOfMemory
 						};
 					}
 					self.length = self.__storage__.length(); 
@@ -561,13 +515,13 @@
 				};
 
 				self.isLoaded = function () {
-					return true;
+					return t;
 				};
 			}, onerror);
 		},
 
 		"isLoaded" : function () {
-			return false;
+			return f;
 		}
 	});
 	FlashStorage.prototype.constructor = FlashStorage;
@@ -607,17 +561,17 @@
 		"setItem" : function (_key, _data) {
 			var self = this,
 			    count = 0, 
-			    cookie = window.escape(_key) + "=" + window.escape(_data) +
+			    cook = window.escape(_key) + "=" + window.escape(_data) +
 			             "; expires=Tue, 19 Jan 2038 03:14:07 GMT; path=/";
 
-			if (cookie.length > 4093) {
+			if (cook.length > 4093) {
 				throw {
-					name : "CookieQuotaExceeded",
-					message : "The cookie is too big"
+					"name" : cookie + quotaExceeded,
+					"message" : cookie + storage + outOfMemory
 				};
 			}
 
-			document.cookie = cookie;
+			document.cookie = cook;
 
 			count = document.cookie.match(/\=/g);
 			self.length = count && count.length || 0;
@@ -636,28 +590,28 @@
 
 		"clear" : function () {
 			var self = this;
-			_.each(self, function (_key) {
+			each(self, function (_key) {
 				self.removeItem(_key);
 			});	
 		},
 
 		"isLoaded" : function () {
-			return true;
+			return t;
 		}
 	});
 	CookieStorage.prototype.constructor = CookieStorage;
 	window.CookieStorage = CookieStorage;
 
 	try {
-		window.localStorage.setItem(name, name);
-		window.localStorage.removeItem(name);
+		window.localStorage.setItem(localStorage, localStorage);
+		window.localStorage.removeItem(localStorage);
 	} catch (ignore) {
 		if ( window.globalStorage ) {
 			proto = GlobalStorage;
 		} else if ( document.documentElement && 
 		            document.documentElement.addBehavior ) {
 			proto = UserDataStorage;
-		} else if ( _.hasFlash() ) {
+		} else if ( hasFlash() ) {
 			proto = FlashStorage;
 		} else if ( navigator.cookieEnabled ) {
 			proto = CookieStorage;
@@ -666,7 +620,7 @@
 		var Storage = proto.extend({
 			"key" : function (_index) {
 				var self = this;
-				if ( _.isNumber(_index) && 
+				if ( isNumber(_index) && 
 				     _index < self.length && 
 					 _index >= 0 ) {
 					return self.$super(_index);
@@ -676,7 +630,7 @@
 
 			"getItem" : function (_key) {
 				var self = this;
-				if ( _.isString(_key) ) {
+				if ( isString(_key) ) {
 					return self.$super(_key);
 				}
 				return null;
@@ -684,18 +638,18 @@
 
 			"setItem" : function (_key, _value) {
 				var self = this;
-				if ( _.isString(_key) ) {
+				if ( isString(_key) ) {
 					self.$super(
 						_key, 
-						_.isString(_value) ? 
-							_value : _.oProto.toString.call(_value)
+						isString(_value) ? 
+							_value : objectPrototype.toString.call(_value)
 					);
 				}
 			},
 
 			"removeItem" : function (_key) {
 				var self = this;
-				if ( _.isString(_key) ) {
+				if ( isString(_key) ) {
 					self.$super(_key);
 				}
 			},
@@ -704,7 +658,7 @@
 				var self = this,
 					timer = null;
 
-				if ( !_.isFunction(_callback) ) {
+				if ( !isFunction(_callback) ) {
 					return;
 				}
 
@@ -731,5 +685,5 @@
 		);
 	}
 
-}(window, window.document, window.location, window.navigator, void(0), 
-  "localStorage"));
+}(window, window.document, window.location, window.navigator, void(0), false,
+  true));

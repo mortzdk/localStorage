@@ -11,7 +11,6 @@
 	"devDependencies" : {
 		"grunt": "~0.4.1",
 		"grunt-shell": "~0.7.0",
-		"grunt-contrib-concat": "~0.4.0",
 		"grunt-contrib-watch": "~0.6.1",
 		"grunt-blanket-qunit": "~0.2.0",
 		"grunt-contrib-jshint": "~0.10.0",

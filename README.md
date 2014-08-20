@@ -90,6 +90,17 @@ object is not the native localStorage:
 * FlashStorage
 * CookieStorage
 
+To provide the instanceof feature in both the minified and original version, 
+the classes need the window object:
+
+<pre>
+window.localStorage instanceof window.Storage
+window.localStorage instanceof window.GlobalStorage
+window.localStorage instanceof window.UserDataStorage
+window.localStorage instanceof window.FlashStorage
+window.localStorage instanceof window.CookieStorage
+</pre>
+
 Each of these storages can be created by their own as well.
 
 # isLoaded
