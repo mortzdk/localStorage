@@ -452,7 +452,7 @@
 		        		};
 
 		        	cTimer = setInterval(function () {
-		        		if ( ( _.oProto.hasOwnProperty(_object, "PercentLoaded") && 
+		        		if ( ( _.oProto.hasOwnProperty.call(_object, "PercentLoaded") && 
 		        		       _object.PercentLoaded() === 100 ) ||
 			    			 ready ) {	
 		        			clear.call(self);
@@ -697,8 +697,9 @@
 				if ( _.isString(_key) ) {
 					self.$super(
 						_key, 
-						_value.toString ? _value.toString() :
-						                  _.oProto.toString.call(_value)
+						_.oProto.hasOwnProperty.call(_value, "toString") ? 
+						_value.toString() :
+						_.oProto.toString.call(_value)
 					);
 				}
 			},

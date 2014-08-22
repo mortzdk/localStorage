@@ -407,7 +407,7 @@
 		        		};
 
 		        	cTimer = setInterval(function () {
-		        		if ( ( objectPrototype.hasOwnProperty(_object, "PercentLoaded") && 
+		        		if ( ( objectPrototype.hasOwnProperty.call(_object, "PercentLoaded") && 
 		        		       _object.PercentLoaded() === 100 ) ||
 			    			 ready ) {	
 		        			clear.call(self);
@@ -652,7 +652,7 @@
 				if ( isString(_key) ) {
 					self.$super(
 						_key, 
-						objectPrototype.hasOwnProperty(_value, "toString") ? 
+						objectPrototype.hasOwnProperty.call(_value, "toString") ? 
 						_value.toString() : 
 						objectPrototype.toString.call(_value)
 					);
