@@ -271,7 +271,7 @@
 
 	QUnit.asyncTest("setItem()", 0, function (assert) {
 		var func = function () {
-				QUnit.expect(2);
+				QUnit.expect(11);
 
 				_.clear();
 
@@ -283,6 +283,72 @@
 					"3",
 					"Testing that key 'Test1' holds the right value " + 
 					"after multiple reassignments"
+				);
+
+				_.clear();
+
+				_.setItem("Test1", {});
+				_.setItem("Test2", true);
+				_.setItem("Test3", null);
+				_.setItem("Test4", [1,2,3]);
+				_.setItem("Test5", 2);
+				_.setItem("Test6", function () {});
+				_.setItem("Test7", undefined);
+				_.setItem("Test8", new Error("test"));
+				_.setItem("Test9", arguments);
+
+				assert.strictEqual(
+					_.getItem("Test1"),
+					"[object Object]",
+					"Testing that key 'Test1' holds the right value when " +
+					"the data is an Object"
+				);
+				assert.strictEqual(
+					_.getItem("Test2"),
+					"true",
+					"Testing that key 'Test2' holds the right value when " +
+					"the data is an Boolean"
+				);
+				assert.ok(
+					_.getItem("Test3") === "null" || _.getItem("Test3") === "",
+					"Testing that key 'Test3' holds the right value when " +
+					"the data is a Null"
+				);
+				assert.strictEqual(
+					_.getItem("Test4"),
+					"1,2,3",
+					"Testing that key 'Test4' holds the right value when " +
+					"the data is an Array"
+				);
+				assert.strictEqual(
+					_.getItem("Test5"),
+					"2",
+					"Testing that key 'Test5' holds the right value when " +
+					"the data is a Number"
+				);
+				assert.ok(
+					/^function(%20?)%28%29(%20?)%7B(.*)%7D$/.test(
+						window.escape(_.getItem("Test6"))
+					),
+					"Testing that key 'Test6' holds the right value when " +
+					"the data is an Function"
+				);
+				assert.strictEqual(
+					_.getItem("Test7"),
+					"undefined",
+					"Testing that key 'Test7' holds the right value when " +
+					"the data is an Object"
+				);
+				assert.strictEqual(
+					_.getItem("Test8"),
+					"Error: test",
+					"Testing that key 'Test8' holds the right value when " +
+					"the data is an Error"
+				);
+				assert.ok(
+					/\[object (Arguments|Object)\]/.test(_.getItem("Test9")),
+					"Testing that key 'Test9' holds the right value when " +
+					"the data is an Arguments"
 				);
 
 				_.clear();

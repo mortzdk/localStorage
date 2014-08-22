@@ -42,8 +42,7 @@ module.exports = function (grunt) {
 					jQuery: true,
 					module: true,
 					QUnit: true,
-					ActiveXObject: true,
-					CollectGarbage: true
+					ActiveXObject: true
 				}
 			}
 		},

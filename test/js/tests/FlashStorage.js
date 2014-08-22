@@ -229,6 +229,7 @@
 					timer = null;
 
 					_.clear();
+
 					_.setItem("Test1", "1");
 					_.setItem("Test1", "2");
 					_.setItem("Test1", "3");

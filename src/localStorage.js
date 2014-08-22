@@ -100,7 +100,7 @@
 			return parseInt(_arg, 10);
 		},
 		hasFlash = function () {
-			var flash, 
+			var flash,
 			    description;
 			try {
 				flash = new ActiveXObject(flashAox);
@@ -114,11 +114,11 @@
 				return f;
 			} catch (ignore) {
 				if ( isObject(navigator.plugins[flashPlugin]) && 
-					 !isUndefined(navigator.mimeTypes) && 
-					 !isUndefined(navigator.mimeTypes[flashMime]) ) {
+				     !isUndefined(navigator.mimeTypes) && 
+				     !isUndefined(navigator.mimeTypes[flashMime]) ) {
 					description = navigator.plugins[flashPlugin].description;
 					if ( navigator.mimeTypes[flashMime].enabledPlugin && 
-						 !isUndefined(description) ) {
+					     !isUndefined(description) ) {
 						description = description.replace(
 							/^.*\s+(\S+\s+\S+$)/, 
 							"$1"
@@ -136,7 +136,7 @@
 		},
 		isString = function (_arg) {
 			return typeof _arg === string.toLowerCase() || 
-			       objectPrototype.toString.call(_arg) === "[" + object + " " + string + "]";
+		           objectPrototype.toString.call(_arg) === "[" + object + " " + string + "]";
 		},
 		isFunction = function (_arg) {
 			return typeof _arg === func.toLowerCase() || 
@@ -157,8 +157,8 @@
 		swfURL = (function() {
 			var scripts = document.scripts || 
 			              document.getElementsByTagName("script"),
-				source = scripts[scripts.length-1].src.split("?"),
-				url = null;
+			    source = scripts[scripts.length-1].src.split("?"),
+			    url = null;
 
 			if (source[1]) {
 				each(source[1].split("&"), function (_arg) {
@@ -166,6 +166,7 @@
 
 					if (data[0] === "swfURL") {
 						url = decodeURIComponent(data[1].replace(/\+/g,  " "));
+						return url;
 					}
 				});	
 			}
@@ -285,16 +286,16 @@
 		"init" : function () {
 			var self = this,
 			    AXO,
-				owner,
-				garbage = function () {
-					window.detachEvent(onunload, garbage);
-					AXO = owner = self.__storage__ = null;
+			    owner,
+			    garbage = function () {
+			    	window.detachEvent(onunload, garbage);
+			    	AXO = owner = self.__storage__ = null;
 					/* jshint ignore:start */
-					if ( isFunction(CollectGarbage) ) {
-						CollectGarbage();
-					}
+			    	if ( isFunction(CollectGarbage) ) {
+			    		CollectGarbage();
+			    	}
 					/* jshint ignore:end */
-				};
+			    };
 
 			try {
 				AXO = new ActiveXObject("htmlfile");
@@ -382,61 +383,61 @@
 		"init" : function (onerror) {
 			var self = this,
 			    owner,
-				url = swfURL || localStorage + ".swf",
-				timeout = 2000,
-				attrs = "",
-		    	attributes = {
-		    		"id" : localStorage,
-		    		"name" : localStorage,
-		    		"width" : 1,
-		    		"height" : 1
-		    	},
-		    	parameters = {
-		    		allowScriptAccess : "always",
-		    		wmode : "transparent",
-		    		flashvars : "readyFn=window._swfReady"
-		    	},
-		    	swfLoaded = function (_object, _callback, _error) {
-		    		var cTimer = null,
-		    			eTimer = null,
-		    			clear = function () {
-		    				clearInterval(cTimer);
-		    				clearTimeout(eTimer);
-		    				eTimer = cTimer = null;
-		    			};
+			    url = swfURL || localStorage + ".swf",
+			    timeout = 2000,
+			    attrs = "",
+		        attributes = {
+		        	"id" : localStorage,
+		        	"name" : localStorage,
+		        	"width" : 1,
+		        	"height" : 1
+		        },
+		        parameters = {
+		        	allowScriptAccess : "always",
+		        	wmode : "transparent",
+		        	flashvars : "readyFn=window._swfReady"
+		        },
+		        swfLoaded = function (_object, _callback, _error) {
+		        	var cTimer = null,
+		        		eTimer = null,
+		        		clear = function () {
+		        			clearInterval(cTimer);
+		        			clearTimeout(eTimer);
+		        			eTimer = cTimer = null;
+		        		};
 
-		    		cTimer = setInterval(function () {
-		    			if ( ( objectPrototype.hasOwnProperty(_object, "PercentLoaded") && 
-		    			       _object.PercentLoaded() === 100 ) ||
-							 ready ) {	
-		    				clear.call(self);
-		    				_callback.call(self);
-		    			}
-		    		}, 10);
-		    		eTimer = setTimeout(function () {
-		    			clear.call(self);
-						if ( isFunction(_error) )  {
-							_error.call(self);
-						}
-		    		}, timeout);
-		    	}, unload = function () {
-					var timer = null;
+		        	cTimer = setInterval(function () {
+		        		if ( ( objectPrototype.hasOwnProperty(_object, "PercentLoaded") && 
+		        		       _object.PercentLoaded() === 100 ) ||
+			    			 ready ) {	
+		        			clear.call(self);
+		        			_callback.call(self);
+		        		}
+		        	}, 10);
+		        	eTimer = setTimeout(function () {
+		        		clear.call(self);
+			    		if ( isFunction(_error) )  {
+			    			_error.call(self);
+			    		}
+		        	}, timeout);
+		        }, unload = function () {
+			    	var timer = null;
 
-					window.detachEvent(onunload, unload);
-					
-					owner.style.display = none;
-					timer = setInterval(function () {
-						if (owner.readyState === 4) {
-							clearInterval(timer);
-							each(owner, function (_arg) {
-								if ( isFunction(_arg) ) {	
-									_arg = null;
-								}
-							});
-							owner.parentNode.removeChild(owner);
-						}
-					}, 10);
-				};
+			    	window.detachEvent(onunload, unload);
+			    	
+			    	owner.style.display = none;
+			    	timer = setInterval(function () {
+			    		if (owner.readyState === 4) {
+			    			clearInterval(timer);
+			    			each(owner, function (_arg) {
+			    				if ( isFunction(_arg) ) {	
+			    					_arg = null;
+			    				}
+			    			});
+			    			owner.parentNode.removeChild(owner);
+			    		}
+			    	}, 10);
+			    };
 
 			window._swfReady = function (_bool) {
 				ready = _bool;
@@ -651,8 +652,9 @@
 				if ( isString(_key) ) {
 					self.$super(
 						_key, 
-						isString(_value) ? 
-							_value : objectPrototype.toString.call(_value)
+						objectPrototype.hasOwnProperty(_value, "toString") ? 
+						_value.toString() : 
+						objectPrototype.toString.call(_value)
 					);
 				}
 			},

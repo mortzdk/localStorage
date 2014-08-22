@@ -111,8 +111,8 @@
 		self.swfURL = (function() {
 			var scripts = document.scripts || 
 			              document.getElementsByTagName("script"),
-				source = scripts[scripts.length-1].src.split("?"),
-				url = null;
+			    source = scripts[scripts.length-1].src.split("?"),
+			    url = null;
 
 			if (source[1]) {
 				self.each(source[1].split("&"), function (_arg) {
@@ -120,6 +120,7 @@
 
 					if (data[0] === "swfURL") {
 						url = decodeURIComponent(data[1].replace(/\+/g,  " "));
+						return url;
 					}
 				});	
 			}
@@ -158,8 +159,8 @@
 		 */
 		self.hasFlash = function () {
 			var flash, 
-				description,
-				mimetype = "application/x-shockwave-flash";
+			    description,
+			    mimetype = "application/x-shockwave-flash";
 			try {
 				flash = new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
 				if ( flash ) {
@@ -172,11 +173,11 @@
 				return false;
 			} catch (ignore) {
 				if ( _.isObject(navigator.plugins["Shockwave Flash"]) && 
-					 !_.isUndefined(navigator.mimeTypes) && 
-					 !_.isUndefined(navigator.mimeTypes[mimetype]) ) {
+				     !_.isUndefined(navigator.mimeTypes) && 
+				     !_.isUndefined(navigator.mimeTypes[mimetype]) ) {
 					description = navigator.plugins["Shockwave Flash"].description;
 					if ( navigator.mimeTypes[mimetype].enabledPlugin && 
-						 !_.isUndefined(description) ) {
+					     !_.isUndefined(description) ) {
 						description = description.replace(
 							/^.*\s+(\S+\s+\S+$)/, 
 							"$1"
@@ -209,7 +210,7 @@
 			function (_type) {
 				self["is" + _type] = function (_arg) {
 					return typeof _arg === _type.toLowerCase() || 
-						   self.oProto.toString.call(_arg) === "[object " + _type + "]";
+					       self.oProto.toString.call(_arg) === "[object " + _type + "]";
 				};
 			}
 		);
@@ -224,34 +225,34 @@
 	function Class(){} 
 	Class.extend = function(_values) {
 		var Self = this,
-			superClass = Self.prototype,
-			protoClass = new Self(Class),
-			superMethod = function () {
-				return (function (name, fn) {
-					return function() {
-						var res,
-							temp = this.$super;
+		    superClass = Self.prototype,
+		    protoClass = new Self(Class),
+		    superMethod = function () {
+		    	return (function (name, fn) {
+		    		return function() {
+		    			var res,
+		    				temp = this.$super;
 	   
-						// Add a new super method that is the same method
-						// but on the super-class
-						this.$super = superClass[name];
+		    			// Add a new super method that is the same method
+		    			// but on the super-class
+		    			this.$super = superClass[name];
 
-						res = fn.apply(this, arguments);        
+		    			res = fn.apply(this, arguments);        
 
-						this.$super = temp;
+		    			this.$super = temp;
 
-						return res;
-				  };				
-				}(arguments[0], arguments[1]));
-			};
+		    			return res;
+		    	  };				
+		    	}(arguments[0], arguments[1]));
+		    };
 
 		// Copy the properties over onto the new prototype
 		_.forEach(_values, function (_value, _name) {
 			// Check if we're overwriting an existing function
 			protoClass[_name] = ( _.isFunction(_value) && 
-							 _.isFunction(superClass[_name]) ) ?
-							 superMethod.call(Self, _name, _value) :
-							 _value;
+							      _.isFunction(superClass[_name]) ) ?
+							      superMethod.call(Self, _name, _value) :
+							      _value;
 		});
  
 		function Persistent () {
@@ -329,16 +330,16 @@
 		"init" : function () {
 			var self = this,
 			    AXO,
-				owner,
-				garbage = function () {
-					window.detachEvent("onunload", garbage);
-					AXO = owner = self.__storage__ = null;
+			    owner,
+			    garbage = function () {
+			    	window.detachEvent("onunload", garbage);
+			    	AXO = owner = self.__storage__ = null;
 					/* jshint ignore:start */
-					if ( _.isFunction(GarbageCollect) ) {
-						GarbageCollect();
-					}
+			    	if ( _.isFunction(CollectGarbage) ) {
+			    		CollectGarbage();
+			    	}
 					/* jshint ignore:end */
-				};
+			    };
 
 			try {
 				AXO = new ActiveXObject("htmlfile");
@@ -426,62 +427,62 @@
 		"init" : function (onerror) {
 			var self = this,
 			    owner,
-				url = _.swfURL ? _.swfURL : name + ".swf",
-				timeout = 2000,
-				attrs = "",
-				mimetype = "application/x-shockwave-flash",
-		    	attributes = {
-		    		"id" : name,
-		    		"name" : name,
-		    		"width" : 1,
-		    		"height" : 1
-		    	},
-		    	parameters = {
-		    		allowScriptAccess : "always",
-		    		wmode : "transparent",
-		    		flashvars : "readyFn=window._swfReady"
-		    	},
-		    	swfLoaded = function (_object, _callback, _error) {
-		    		var cTimer = null,
-		    			eTimer = null,
-		    			clear = function () {
-		    				clearInterval(cTimer);
-		    				clearTimeout(eTimer);
-		    				eTimer = cTimer = null;
-		    			};
+			    url = _.swfURL ? _.swfURL : name + ".swf",
+			    timeout = 2000,
+			    attrs = "",
+			    mimetype = "application/x-shockwave-flash",
+		        attributes = {
+		        	"id" : name,
+		        	"name" : name,
+		        	"width" : 1,
+		        	"height" : 1
+		        },
+		        parameters = {
+		        	allowScriptAccess : "always",
+		        	wmode : "transparent",
+		        	flashvars : "readyFn=window._swfReady"
+		        },
+		        swfLoaded = function (_object, _callback, _error) {
+		        	var cTimer = null,
+		        		eTimer = null,
+		        		clear = function () {
+		        			clearInterval(cTimer);
+		        			clearTimeout(eTimer);
+		        			eTimer = cTimer = null;
+		        		};
 
-		    		cTimer = setInterval(function () {
-		    			if ( ( _.oProto.hasOwnProperty(_object, "PercentLoaded") && 
-		    			       _object.PercentLoaded() === 100 ) ||
-							 ready ) {	
-		    				clear.call(self);
-		    				_callback.call(self);
-		    			}
-		    		}, 10);
-		    		eTimer = setTimeout(function () {
-		    			clear.call(self);
-						if ( _.isFunction(_error) )  {
-							_error.call(self);
-						}
-		    		}, timeout);
-		    	}, unload = function () {
-					var timer = null;
+		        	cTimer = setInterval(function () {
+		        		if ( ( _.oProto.hasOwnProperty(_object, "PercentLoaded") && 
+		        		       _object.PercentLoaded() === 100 ) ||
+			    			 ready ) {	
+		        			clear.call(self);
+		        			_callback.call(self);
+		        		}
+		        	}, 10);
+		        	eTimer = setTimeout(function () {
+		        		clear.call(self);
+			    		if ( _.isFunction(_error) )  {
+			    			_error.call(self);
+			    		}
+		        	}, timeout);
+		        }, unload = function () {
+			    	var timer = null;
 
-					window.detachEvent("onunload", unload);
-					
-					owner.style.display = "none";
-					timer = setInterval(function () {
-						if (owner.readyState === 4) {
-							clearInterval(timer);
-							_.each(owner, function (_arg) {
-								if ( _.isFunction(_arg) ) {	
-									_arg = null;
-								}
-							});
-							owner.parentNode.removeChild(owner);
-						}
-					}, 10);
-				};
+			    	window.detachEvent("onunload", unload);
+			    	
+			    	owner.style.display = "none";
+			    	timer = setInterval(function () {
+			    		if (owner.readyState === 4) {
+			    			clearInterval(timer);
+			    			_.each(owner, function (_arg) {
+			    				if ( _.isFunction(_arg) ) {	
+			    					_arg = null;
+			    				}
+			    			});
+			    			owner.parentNode.removeChild(owner);
+			    		}
+			    	}, 10);
+			    };
 
 			window._swfReady = function (_bool) {
 				ready = _bool;
@@ -553,7 +554,7 @@
 					if ( !self.__storage__.setItem(_key, _data) ) {
 						throw {
 							"name" : "FlashQuotaExceeded",
-							"message" : "The storage quota was exceeded"
+							"message" : "FlashStorage is out of memory"
 						};
 					}
 					self.length = self.__storage__.length(); 
@@ -622,7 +623,7 @@
 			if (cookie.length > 4093) {
 				throw {
 					name : "CookieQuotaExceeded",
-					message : "The cookie is too big"
+					message : "CookieStorage is out of memory"
 				};
 			}
 
@@ -696,8 +697,8 @@
 				if ( _.isString(_key) ) {
 					self.$super(
 						_key, 
-						_.isString(_value) ? 
-							_value : _.oProto.toString.call(_value)
+						_value.toString ? _value.toString() :
+						                  _.oProto.toString.call(_value)
 					);
 				}
 			},

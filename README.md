@@ -150,8 +150,8 @@ Each of these storages can be created by their own as well.
 # Exceptions
 
 The polyfill does not handle any exceptions. Instead it just pass on the
-exception to the callee-function which then can choose to catch it. The cookie 
-and flash solutions throws a new exception named CookieQuotaExceeded, 
+exception to the callee-function which then can choose to catch it. The cookie, 
+userdata, and flash solutions throws a new exception named CookieQuotaExceeded, 
 UserDataQuotaExceeded and FlashQuotaExceeded, which are thrown when the data 
 stored is greater than what is allowed for the solution.
 
