@@ -23,9 +23,9 @@ the `swfURL` parameter to the file source. One example could be:
 The localStorage polyfill is available at the following addresses:
 
 #### jsdelivr ####
-* //cdn.jsdelivr.net/localstorage/2.0.0/localStorage.min.js
-* //cdn.jsdelivr.net/localstorage/2.0.0/localStorage-debug.min.js
-* //cdn.jsdelivr.net/localstorage/2.0.0/localStorage.swf
+* //cdn.jsdelivr.net/localstorage/2.0.1/localStorage.min.js
+* //cdn.jsdelivr.net/localstorage/2.0.1/localStorage-debug.min.js
+* //cdn.jsdelivr.net/localstorage/2.0.1/localStorage.swf
 
 #### cdnjs ####
 * //cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.0/localStorage-debug.js
