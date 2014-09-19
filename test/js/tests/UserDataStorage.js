@@ -22,7 +22,8 @@
 			// http://stackoverflow.com/questions/13481817/internet-explorer-official-status-of-userdata-behavior
 			if ( document.documentElement.addBehavior && 
 			     !conditionalComment("if gte IE 9") && 
-			     ( document.documentMode && document.documentMode < 9 ) && 
+			     ( !document.documentMode || 
+				   (document.documentMode && document.documentMode < 9) ) && 
 				 !_ ) {
 				_ = window.UserDataStorage();
 			}

@@ -1,7 +1,7 @@
 (function (window, document, location, navigator, undefined, name) {
 	"use strict";
 
-	function Helper () {
+function Helper () {
 		var self = this;
 		
 		/**
@@ -693,13 +693,15 @@
 			},
 
 			"setItem" : function (_key, _value) {
-				var self = this;
+				var self = this,
+				    value = _.isString(_value) ? _value : 
+                            ( !(_value === null || _.isUndefined(_value)) && 
+							  _.oProto.hasOwnProperty.call(_value, "toString") ? 
+					        _value.toString() : _.oProto.toString.call(_value));
 				if ( _.isString(_key) ) {
 					self.$super(
 						_key, 
-						_.oProto.hasOwnProperty.call(_value, "toString") ? 
-						_value.toString() :
-						_.oProto.toString.call(_value)
+						value	
 					);
 				}
 			},

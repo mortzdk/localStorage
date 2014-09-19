@@ -770,7 +770,14 @@ this.addScript = function(doc, id, src)
 this.getStyle = this.isIE ? 
     function(el, name)
     {
-        return el.currentStyle[name] || el.style[name] || undefined;
+		if ( Object.prototype.hasOwnProperty.call(el, "currentStyle") && 
+		     el.currentStyle[name] ) {
+			return el.currentStyle[name];
+		} else if ( el.style[name] ) {
+			return 	el.style[name];
+		}
+
+		return undefined;
     }
     :
     function(el, name)

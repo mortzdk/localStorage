@@ -648,13 +648,15 @@
 			},
 
 			"setItem" : function (_key, _value) {
-				var self = this;
+				var self = this,
+				    value = isString(_value) ? _value : 
+                            ( !(_value === null || isUndefined(_value)) &&
+							  objectPrototype.hasOwnProperty.call(_value, "toString") ? 
+						    _value.toString() : objectPrototype.toString.call(_value));
 				if ( isString(_key) ) {
 					self.$super(
 						_key, 
-						objectPrototype.hasOwnProperty.call(_value, "toString") ? 
-						_value.toString() : 
-						objectPrototype.toString.call(_value)
+						value	
 					);
 				}
 			},
