@@ -28,11 +28,11 @@ The localStorage polyfill is available at the following addresses:
 * //cdn.jsdelivr.net/localstorage/2.0.1/localStorage.swf
 
 #### cdnjs ####
-* //cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.0/localStorage-debug.js
-* //cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.0/localStorage-debug.min.js
-* //cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.0/localStorage.js
-* //cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.0/localStorage.min.js
-* //cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.0/localStorage.swf
+* //cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage-debug.js
+* //cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage-debug.min.js
+* //cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.js
+* //cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.min.js
+* //cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.swf
 
 ### isLoaded ###
 
