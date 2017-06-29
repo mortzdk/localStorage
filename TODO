@@ -1,0 +1,12 @@
+* Handle throw error on key()           ### NEEDS TESTING
+   - OLD firefox throws error
+   - IE native localstorage throws error
+* Create docs
+* Create readme
+* Create bump file
+* Ensure it works on nodejs
+* Create storage specific files
+
+================= BRANCH ====================
+
+* Create JAVA storage option

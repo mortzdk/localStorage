@@ -1,0 +1,54 @@
+{
+	"name": "localstorage",
+	"version": "3.0.0",
+	"homepage": "https://www.mortz.dk/localStorage",	
+	"main": [
+		"dist/localStorage.js",
+		"dist/localStorage.swf",
+		"dist/localStorage.jar"
+	],
+    "keywords": [
+        "localstorage",
+        "storage",
+        "polyfill",
+        "flash",
+        "java",
+        "cookie",
+        "userdata",
+        "global",
+        "session",
+        "ram",
+        "storageevent",
+        "offline",
+        "online",
+        "incognito"
+    ],
+    "license" : "MIT",
+    "ignore" : [
+        "test",
+        "coverage",
+        "src",
+        "grunt",
+        "node_modules",
+        "bump.sh",
+        "Gruntfile.js",
+        "install.sh",
+        "TODO",
+        "update.sh"
+    ],
+	"dependencies" : {
+	},
+	"devDependencies": {
+		"firebug-lite" : "1.5.1",
+		"qunit"        : "1.23.1"
+	},
+	"exportsOverride" : {
+		"qunit" : {
+			"js" : "qunit/*.js",
+			"css" : "qunit/*.css"
+		},
+		"firebug-lite" : {
+			"js" : "build/firebug-lite.js"
+		}
+	}
+}

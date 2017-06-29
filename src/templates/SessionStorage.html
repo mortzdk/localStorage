@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<title>UserDataStorage StorageEvent Test</title>
+
+		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+			<script type="text/javascript"
+			        src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script type="text/javascript"
+			        src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+		<![endif]-->
+	</head>
+	<body>
+		<!-- include: "type": "testjs", "files": "js/**/*.js" -->
+		<!-- /include -->
+        <script type="text/javascript">
+            var timeout = 200,
+                ss      = new SessionStorage();
+
+            (window.parent || window.opener).window.addListener();
+
+            ss.setItem("TEST", "123");
+            setTimeout(function () {
+                ss.setItem("TEST", "456");
+                setTimeout(function () {
+                    ss.removeItem("TEST");
+                    setTimeout(function () {
+                        ss.setItem("TEST", "TEST");
+                        setTimeout(function () {
+                            ss.setItem("TEST1", "TEST1");
+                            setTimeout(function () {
+                                ss.clear();
+                            }, timeout);
+                        }, timeout);
+                    }, timeout);
+                }, timeout);
+            }, timeout);
+        </script>
+	</body>
+</html>

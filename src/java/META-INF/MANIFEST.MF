@@ -1,0 +1,3 @@
+Codebase: *
+Application-Name: LocalStorage
+Caller-Allowable-Codebase: *

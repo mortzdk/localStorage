@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<title>FlashStorage StorageEvent Test</title>
+
+		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+			<script type="text/javascript"
+			        src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script type="text/javascript"
+			        src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+		<![endif]-->
+	</head>
+	<body>
+		<!-- include: "type": "testjs", "files": "js/**/*.js" -->
+		<!-- /include -->
+        <script type="text/javascript">
+            var timeout = 1000,
+                js      = new JavaStorage(function () {
+			    	clearInterval(timer);
+			    	timer = undefined;
+                }, 3000),
+			    timer   = setInterval(function () {
+			    	if ( js.isLoaded() ) {
+			    		clearInterval(timer);
+			    		timer = undefined;
+
+                        (window.parent || window.opener).window.addListener();
+
+                        js.setItem("TEST", "123");
+                        setTimeout(function () {
+                            js.setItem("TEST", "456");
+                            setTimeout(function () {
+                                js.removeItem("TEST");
+                                setTimeout(function () {
+                                    js.setItem("TEST", "TEST");
+                                    setTimeout(function () {
+                                        js.clear();
+                                    }, timeout);
+                                }, timeout);
+                            }, timeout);
+                        }, timeout);
+			    	}
+			    }, 10);
+
+        </script>
+	</body>
+</html>

@@ -6,7 +6,7 @@ available in both modern and old browsers. This is done using a lot of
 different techniques, that enables persistent synchronous storage in one way 
 or another.
 
-# How to use #
+### How to use ###
 
 To use this polyfill you simply have to include the localStorage.js file to 
 your site. Furthermore you have to specify the URL of the localStorage.swf as
@@ -17,6 +17,22 @@ the `swfURL` parameter to the file source. One example could be:
         src="js/localStorage-debug.js?swfURL=js/localStorage.swf"&gt;
 &lt;/script&gt;
 </pre>
+
+### Version 3.0.0 ###
+
+* StorageEvent (dirty checking)
+* modularization of storage
+* RAMStorage
+* SessionStorage
+* NPM and bower
+
+### Notes about native objects ###
+
+SessionStorage - clear events key and oldValue is a previous set item.
+LocalStorage   - IE8-IE11,FF3.5 - key method index out of bound throws error.
+LocalStorage   - IE8-IE11       - attribute keys are overriden.
+LocalStorage   - FF3.5          - StorageEvent only consist of domain and type.
+SessionStorage - FF3.5          - No events between iframe and test page.
 
 ### CDN ###
 
@@ -170,6 +186,9 @@ userdata, and flash solutions throws a new exception named CookieQuotaExceeded,
 UserDataQuotaExceeded and FlashQuotaExceeded, which are thrown when the data 
 stored is greater than what is allowed for the solution.
 
+TODO: CookieQuotaExceeded is thrown when cookie is too big, but one can still
+store cookies after the exception is thrown. Maybe more description
+
 The best practice of handling the polyfill element is to have a try-catch
 around any `setItem` call, as this method potentially will throw exceptions
 when the Quota of the localStorage is full. Most browsers use the term "quota"
@@ -199,3 +218,9 @@ try {
 As per version 2.0, the dependency to `swfobject` has been removed. Instead it
 was decided to implement the flash object creation as a part of the flash 
 solution.
+
+# Local file:// usage
+
+In order to use the FlashStorage locally i.e. using the `file:` protocol, one 
+must update the [flash global settings](http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html) and add the locations of the local files to
+the trusted locations.

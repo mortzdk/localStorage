@@ -1,158 +1,130 @@
 module.exports = function (grunt) {
 	"use strict";
-	grunt.initConfig({
-		pkg: grunt.file.readJSON("package.json"),
-		uglify: {
-			options: {
-				banner : "/* <%= pkg.name %> - Version <%= pkg.version %> - <%= grunt.template.today('dd-mm-yyyy') %> */\n"
-			},
-			dist: {
-				files: {
-					"dist/<%= pkg.name %>.min.js": ["dist/<%= pkg.name %>.js"],
-					"dist/<%= pkg.name %>-debug.min.js": ["dist/<%= pkg.name %>-debug.js"]
-				}
-			}
-		},
-		jshint: {
-			files: ["Gruntfile.js", "src/*.js", "test/js/tests/**/*.js"],
-			options: {
-				camelcase: true,
-				curly: true,
-				eqeqeq: true,
-				es3: true,
-				forin: true,
-				freeze: true,
-				immed: true,
-				indent: 4,
-				latedef: true,
-				newcap: true,
-				noarg: true,
-				noempty: true,
-				nonbsp: true,
-				nonew: true,
-				plusplus: true,
-				quotmark: "double",
-				undef: true,
-				unused: true,
-				strict: true,
-				trailing: true,
-				browser: true,
-				devel: true,
-				globals: {
-					jQuery: true,
-					module: true,
-					QUnit: true,
-					ActiveXObject: true
-				}
-			}
-		},
-		watch: {
-			files: [
-				"<%= jshint.files %>", 
-				"src/*.as",
-				"test/*.html"
+    
+    // TODO grunt coverage:
+
+	var tasks = {
+			"init" : ["connect"],
+			"dev"  : [
+				// Bower
+				"bower:install",
+
+				// JS
+				"jshint:dev",
+				"bowerRequirejs",
+				"requirejs",
+				"uglify:dev",
+				"jshint:test",
+				"shell:flash",
+                "shell:javac",
+                "shell:jar",
+//                "shell:jarsigner",
+                "shell:pack200",
+				"copy:dev",
+				"includeSource:dev",
+				"wiredep:dev",
+                "shell:symlink",
+				"qunit"
 			],
-			tasks: [
-				"clean",
-				"jshint", 
-				"shell",
-				"copy:test", 
-				"blanket_qunit"
+			"prod" : [
+				// Copy
+				"copy:prod",
+
+				// Prod
+				"uglify:prod"
+
+			],
+			"clean" : [
+				"clean:bower", 
+				"clean:rjs", 
+				"clean:dev", 
+				"clean:prod"
 			]
 		},
-		clean: {
-			test: {
-				src: [
-					"test/js/*.js",
-					"test/js/*.swf"
-				]
-			},
-			dist: {
-				src: ["dist"]
-			}
+		prod = function () {
+			grunt.task.run(
+				tasks.clean
+					.concat(tasks.init)
+					.concat(tasks.dev)
+					.concat(["clean:rjs", "clean:prod"])
+					.concat(tasks.prod)
+			);
 		},
-		copy : {
-			test : {
-				files: [{
-					expand: true,
-					cwd: "src",
-					src: ["*.js", "*.swf"],
-					dest: "test/js/"
-				}]
-			},
-			dist : {
-				files: [{
-					expand: true,
-					cwd: "src",
-					src: ["*.js", "*.swf"],
-					dest: "dist/"
-				}]
-			}
+		dev = function () { 
+			grunt.task.run(
+				["clean:dev"]
+					.concat(tasks.init)
+					.concat(tasks.dev)
+			);
 		},
-		shell : {
-			flash : {
-				command : "mxmlc <%= pkg.name %>.as",
-				options : {
-					stderr : false,
-					execOptions : {
-						cwd : "src"
-					}
-				}
-			}
-		}
-		/* jshint ignore:start */
-		,blanket_qunit : {
-			all : {
-				options : {
-					urls : [
-						"test/index.html?coverage=true&gruntReport",
-						"test/index-debug.html?coverage=true&gruntReport"
-					],
-					threshold : 22 
-				}
-			}
-		}
-		/* jshint ignore:end */
-	});
-	
-	grunt.loadNpmTasks("grunt-shell");
-	grunt.loadNpmTasks("grunt-contrib-copy");
-	grunt.loadNpmTasks("grunt-contrib-clean");
-	grunt.loadNpmTasks("grunt-contrib-uglify");
-	grunt.loadNpmTasks("grunt-contrib-jshint");
-	grunt.loadNpmTasks("grunt-blanket-qunit");
-	grunt.loadNpmTasks("grunt-contrib-watch");
+		clear = function () {
+			grunt.task.run(
+				tasks.clean
+			);
+		},
+		watch = function () { 
+			grunt.task.run(
+				["clean:dev"]
+					.concat(tasks.dev)
+			);
+		};
 
-	grunt.registerTask(
-		"clear", 
-		["clean"]
-	);
-	grunt.registerTask(
-		"test", 
-		[
-			"clean",
-			"jshint", 
-			"shell",
-			"copy:test", 
-			"blanket_qunit"
+	grunt.initConfig({
+		pkg           : grunt.file.readJSON("package.json"),
+
+		// State
+		production    : false,
+
+		// Directories
+		dist          : "dist",
+		test          : "test",
+		src           : "src",
+		tasks         : "grunt",
+		coverage      : "coverage",
+		docs          : "docs",
+		modules       : "node_modules",
+		templates     : "<%= src %>/templates",
+		tests         : "<%= src %>/tests", 
+		flash         : "<%= src %>/flash",
+		java          : "<%= src %>/java",
+		js            : "<%= test %>/js",
+		css           : "<%= test %>/css",
+		unit          : "<%= test %>/unit", 
+		vendors       : "<%= test %>/vendors",
+		tmp           : "<%= test %>/tmp",
+
+		// Files
+		scripts       : [
+			"Gruntfile.js",
+			"<%= src %>/**/*.js",
+			"<%= tasks %>/**/*.js",
+			"<%= tests %>/**/*.js",
+			"!<%= src %>/intro.js", 
+			"!<%= src %>/outro.js", 
+		],
+		swfs          : [
+			"<%= flash %>/**/*.swf",
+			"<%= flash %>/**/*.fla"
 		]
-	);
-	grunt.registerTask(
-		"dist", 
-		[
-			"clean", 
-			"jshint", 
-			"shell",
-			"copy:test", 
-			"blanket_qunit", 
-			"copy:dist",
-			"uglify"
-		]
-	);
-	grunt.registerTask(
-		"default",
-		[
-			"watch"
-		]
-	);
+	});
+
+	grunt.loadTasks(grunt.config.data.tasks);
+
+	grunt.registerTask("__watch__", watch);
+
+	// "grunt clear" or "grunt clean" clears all temporary and production files
+	grunt.registerTask("clear", clear);
+
+	// "grunt dev", "grunt test" or "grunt development" runs development task
+	grunt.registerTask("development", dev);
+	grunt.registerTask("dev", dev);
+	grunt.registerTask("test", dev);
+
+	// "grunt prod", "grunt production", "grunt dist" runs production task
+	grunt.registerTask("production", prod);
+	grunt.registerTask("prod", prod);
+	grunt.registerTask("dist", prod);
+
+	// "grunt" or "grunt watch" runs watch
+	grunt.registerTask("default", ["clear", "connect", "watch"]);
 };

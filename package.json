@@ -1,21 +1,75 @@
 {
-	"name": "localStorage",
-	"version": "2.0.1",
-	"homepage": "https://github.com/mortzdk/localStorage",
-	"author": {
-		"name": "Morten Houmøller Nygaard",
-		"email": "mortzdk@gmail.com",
-		"url": "http://www.mortz.dk",
-		"phone": "+4528492377"
-	},
-	"devDependencies" : {
-		"grunt": "~0.4.1",
-		"grunt-shell": "~0.7.0",
-		"grunt-contrib-watch": "~0.6.1",
-		"grunt-blanket-qunit": "~0.2.0",
-		"grunt-contrib-jshint": "~0.10.0",
-		"grunt-contrib-uglify": "~0.5.0",
-		"grunt-contrib-clean": "~0.5.0",
-		"grunt-contrib-copy": "~0.5.0"
-	}
+    "name": "localStorage",
+    "version": "3.0.0",
+    "description": "A localStorage polyfill that makes the localStorage api available in both modern and ancient browsers.",
+    "homepage": "https://mortz.dk/localStorage",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/mortz.dk/localStorage.git"
+    },
+    "bugs": {
+        "url": "https://github.com/mortzdk/localStorage/issues",
+        "email": "morten@mortz.dk"
+    },
+    "keywords": [
+        "localstorage",
+        "storage",
+        "polyfill",
+        "flash",
+        "java",
+        "cookie",
+        "userdata",
+        "global",
+        "session",
+        "ram",
+        "storageevent",
+        "offline",
+        "online",
+        "incognito"
+    ],
+    "author": {
+        "name": "Morten Houmøller Nygaard",
+        "email": "morten@mortz.dk"
+    },
+    "directories": {
+      "doc": "docs"
+    },
+    "license": "SEE LICENSE IN MIT-LICENSE",
+    "main": [
+        "dist/localStorage.min.js",
+        "dist/localStorage.swf",
+        "dist/localStorage.jar"
+    ],
+    "scripts": {
+        "test": "grunt test",
+        "cov": "grunt coverage && cat coverage/lcov.info | coveralls",
+        "cover": "npm run cov",
+        "coverage": "npm run cov",
+        "markdown": "grunt markdown",
+        "doc": "grunt doc",
+        "documentation": "npm run doc",
+        "dist": "npm run build",
+        "build": "grunt dist",
+        "clean": "grunt clean"
+    },
+    "dependencies" : {
+        "amdclean": "2.7.0",
+        "grunt": "1.0.1",
+        "grunt-bower-requirejs": "2.0.0",
+        "grunt-bower-task": "0.5.0",
+        "grunt-contrib-clean": "1.1.0",
+        "grunt-contrib-connect": "1.0.2",
+        "grunt-contrib-copy": "1.0.0",
+        "grunt-contrib-jshint": "1.1.0",
+        "grunt-qunit-istanbul": "1.0.0",
+        "grunt-contrib-requirejs": "1.0.0",
+        "grunt-contrib-uglify": "3.0.0",
+        "grunt-contrib-watch": "1.0.0",
+        "grunt-include-source": "1.1.0",
+        "grunt-shell": "2.1.0",
+        "grunt-wiredep": "3.0.1"
+    },
+    "devDependencies" : {
+    },
+    "license" : "MIT"
 }
